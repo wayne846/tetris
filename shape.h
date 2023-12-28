@@ -37,6 +37,7 @@ class Shape{
         void initArray(int start[4][2], int rotate[4][4][2]);
         void moveToStart();
         void updatePosition();
+        void checkDead();
 };
 
 class Shape_I : public Shape{
@@ -74,9 +75,10 @@ class Shape_Z : public Shape{
         Shape_Z(MainWindow *window);
 };
 
-class ShapeFactor{
+class ShapeFactory{
     public:
         static Shape* getShape(MainWindow *window);
+        static Shape* getShape(MainWindow *window, int n);
 };
 
 #endif // SHAPE_H

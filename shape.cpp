@@ -131,8 +131,8 @@ void Shape::initArray(int start[4][2], int rotate[4][4][2]){
 }
 void Shape::moveToStart(){
     for(int i = 0; i < 4; i++){
-        this->mytilesPosition[i][0] = startPosition[i][0];
-        this->mytilesPosition[i][1] = startPosition[i][1];
+        mytilesPosition[i][0] = startPosition[i][0];
+        mytilesPosition[i][1] = startPosition[i][1];
     }
 }
 void Shape::updatePosition(){
@@ -163,6 +163,14 @@ void Shape::updatePosition(){
     }
 
 }
+void Shape::checkDead(){
+    for(int i = 0; i < 4; i++){
+        if(window->tiles[ startPosition[i][0] ][ startPosition[i][1] ] != NULL){
+            window->isDead = true;
+            return;
+        }
+    }
+}
 
 //I
 Shape_I::Shape_I(MainWindow *window){
@@ -175,6 +183,7 @@ Shape_I::Shape_I(MainWindow *window){
                            {{-1, -2}, {0, -1}, {1, 0}, {2, 1}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -189,6 +198,7 @@ Shape_J::Shape_J(MainWindow *window){
                            {{0, -2}, {-1, -1}, {0, 0}, {1, 1}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -203,6 +213,7 @@ Shape_L::Shape_L(MainWindow *window){
                            {{2, 0}, {-1, -1}, {0, 0}, {1, 1}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -217,6 +228,7 @@ Shape_O::Shape_O(MainWindow *window){
                            {{0, 0}, {0, 0}, {0, 0}, {0, 0}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -231,6 +243,7 @@ Shape_S::Shape_S(MainWindow *window){
                            {{1, -1}, {2, 0}, {-1, -1}, {0, 0}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -245,6 +258,7 @@ Shape_T::Shape_T(MainWindow *window){
                            {{1, -1}, {-1, -1}, {0, 0}, {1, 1}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
@@ -259,13 +273,41 @@ Shape_Z::Shape_Z(MainWindow *window){
                            {{0, -2}, {1, -1}, {0, 0}, {1, 1}}};
     initArray(start, rotate);
     moveToStart();
+    checkDead();
     updatePosition();
 }
 
-//ShapeFactor
-Shape* ShapeFactor::getShape(MainWindow *window){
+//ShapeFactory
+Shape* ShapeFactory::getShape(MainWindow *window){
     srand(time(NULL));
     int n = rand() % 7;
+    Shape *ret = NULL;
+    switch(n){
+        case 0:
+            ret = new Shape_I(window);
+            break;
+        case 1:
+            ret = new Shape_J(window);
+            break;
+        case 2:
+            ret = new Shape_L(window);
+            break;
+        case 3:
+            ret = new Shape_O(window);
+            break;
+        case 4:
+            ret = new Shape_S(window);
+            break;
+        case 5:
+            ret = new Shape_T(window);
+            break;
+        case 6:
+            ret = new Shape_Z(window);
+            break;
+    }
+    return ret;
+}
+Shape* ShapeFactory::getShape(MainWindow *window, int n){
     Shape *ret = NULL;
     switch(n){
         case 0:

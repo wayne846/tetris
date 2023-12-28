@@ -5,7 +5,9 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <queue>
 #include "shape.h"
+#include "preshape.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,6 +30,8 @@ class MainWindow : public QMainWindow
         QGraphicsRectItem *tiles[10][20]; //[x][y]
         QGraphicsScene *scene_main;
 
+        bool isDead;
+
         void checkLine();
 
     protected:
@@ -40,6 +44,11 @@ class MainWindow : public QMainWindow
         Ui::MainWindow *ui;
 
         Shape *currentShape;
+        Preshape *previewShape;
         QTimer *timer;
+
+        queue<int> shapeSequence;
+
+        void addShapeSequence();
 };
 #endif // MAINWINDOW_H
