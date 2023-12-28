@@ -22,6 +22,68 @@ bool Shape::moveDown(){
     updatePosition();
     return true;
 }
+bool Shape::rotate(){
+    int next[4][2];
+    for(int i = 0; i < 4; i++){
+        next[i][0] = mytilesPosition[i][0] + rotateTable[dir][i][0];
+        next[i][1] = mytilesPosition[i][1] + rotateTable[dir][i][1];
+    }
+    while(next[0][0]<0 || next[1][0]<0 || next[2][0]<0 || next[3][0]<0){ //check left
+        next[0][0] += 1;
+        next[1][0] += 1;
+        next[2][0] += 1;
+        next[3][0] += 1;
+    }
+    while(next[0][0]>9 || next[1][0]>9 || next[2][0]>9 || next[3][0]>9){ //check right
+        next[0][0] -= 1;
+        next[1][0] -= 1;
+        next[2][0] -= 1;
+        next[3][0] -= 1;
+    }
+    while(next[0][1]>19 || next[1][1]>19 || next[2][1]>19 || next[3][1]>19){ //check down
+        next[0][1] -= 1;
+        next[1][1] -= 1;
+        next[2][1] -= 1;
+        next[3][1] -= 1;
+    }
+    for(int i = 0; i < 4; i++){ //check already has tile
+        if(window->tiles[ next[i][0] ][ next[i][1] ] != NULL){
+            return false;
+        }
+    }
+    for(int i = 0; i < 4; i++){ //do rotate;
+        mytilesPosition[i][0] = next[i][0];
+        mytilesPosition[i][1] = next[i][1];
+    }
+    dir++;
+    dir = dir % 4;
+    updatePosition();
+    return true;
+}
+void Shape::initTiles(QColor color){
+    for(int i = 0; i < 4; i++){
+        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(color));
+    }
+}
+void Shape::initArray(int start[4][2], int rotate[4][4][2]){
+    for(int i = 0; i < 4; i++){
+        startPosition[i][0] = start[i][0];
+        startPosition[i][1] = start[i][1];
+    }
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            rotateTable[i][j][0] = rotate[i][j][0];
+            rotateTable[i][j][1] = rotate[i][j][1];
+        }
+    }
+    dir = 0;
+}
+void Shape::moveToStart(){
+    for(int i = 0; i < 4; i++){
+        this->mytilesPosition[i][0] = startPosition[i][0];
+        this->mytilesPosition[i][1] = startPosition[i][1];
+    }
+}
 void Shape::updatePosition(){
     for(int i = 0; i < 4; i++){
         mytiles[i]->setPos(window->tileWidth*mytilesPosition[i][0], window->tileWidth*mytilesPosition[i][1]);
@@ -31,98 +93,98 @@ void Shape::updatePosition(){
 //I
 Shape_I::Shape_I(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(blue));
-        this->mytilesPosition[i][0] = 3+i;
-        this->mytilesPosition[i][1] = 1;
-    }
+    initTiles(blue);
+    int start[4][2] = {{3, 0}, {4, 0}, {5, 0}, {6, 0}};
+    int rotate[4][4][2] = {{{2, -1}, {1, 0}, {0, 1}, {-1, 2}},
+                           {{1, 2}, {0, 1}, {-1, 0}, {-2, -1}},
+                           {{-2, 1}, {-1, 0}, {0, -1}, {1, -2}},
+                           {{-1, -2}, {0, -1}, {1, 0}, {2, 1}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //J
 Shape_J::Shape_J(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(darkBlue));
-    }
-    this->mytilesPosition[0][0] = 3;
-    this->mytilesPosition[0][1] = 0;
-    for(int i = 1; i < 4; i++){
-        this->mytilesPosition[i][0] = 2+i;
-        this->mytilesPosition[i][1] = 1;
-    }
+    initTiles(darkBlue);
+    int start[4][2] = {{3, 0}, {3, 1}, {4, 1}, {5, 1}};
+    int rotate[4][4][2] = {{{2, 0}, {1, -1}, {0, 0}, {-1, 1}},
+                           {{0, 2}, {1, 1}, {0, 0}, {-1, -1}},
+                           {{-2, 0}, {-1, 1}, {0, 0}, {1, -1}},
+                           {{0, -2}, {-1, -1}, {0, 0}, {1, 1}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //L
 Shape_L::Shape_L(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(orange));
-    }
-    this->mytilesPosition[0][0] = 5;
-    this->mytilesPosition[0][1] = 0;
-    for(int i = 1; i < 4; i++){
-        this->mytilesPosition[i][0] = 2+i;
-        this->mytilesPosition[i][1] = 1;
-    }
+    initTiles(orange);
+    int start[4][2] = {{5, 0}, {3, 1}, {4, 1}, {5, 1}};
+    int rotate[4][4][2] = {{{0, 2}, {1, -1}, {0, 0}, {-1, 1}},
+                           {{-2, 0}, {1, 1}, {0, 0}, {-1, -1}},
+                           {{0, -2}, {-1, 1}, {0, 0}, {1, -1}},
+                           {{2, 0}, {-1, -1}, {0, 0}, {1, 1}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //O
 Shape_O::Shape_O(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(yellow));
-    }
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 2; j++){
-            this->mytilesPosition[i*2+j][0] = 4 + j;
-            this->mytilesPosition[i*2+j][1] = 0 + i;
-        }
-    }
+    initTiles(yellow);
+    int start[4][2] = {{4, 0}, {5, 0}, {4, 1}, {5, 1}};
+    int rotate[4][4][2] = {{{0, 0}, {0, 0}, {0, 0}, {0, 0}},
+                           {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
+                           {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
+                           {{0, 0}, {0, 0}, {0, 0}, {0, 0}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //S
 Shape_S::Shape_S(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(green));
-    }
-    int arr[4][2] = {{4, 0}, {5, 0}, {3, 1}, {4, 1}};
-    for(int i = 0; i < 4; i++){
-        this->mytilesPosition[i][0] = arr[i][0];
-        this->mytilesPosition[i][1] = arr[i][1];
-    }
+    initTiles(green);
+    int start[4][2] = {{4, 0}, {5, 0}, {3, 1}, {4, 1}};
+    int rotate[4][4][2] = {{{1, 1}, {0, 2}, {1, -1}, {0, 0}},
+                           {{-1, 1}, {-2, 0}, {1, 1}, {0, 0}},
+                           {{-1, -1}, {0, -2}, {-1, 1}, {0, 0}},
+                           {{1, -1}, {2, 0}, {-1, -1}, {0, 0}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //T
 Shape_T::Shape_T(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(purple));
-    }
-    int arr[4][2] = {{4, 0}, {3, 1}, {4, 1}, {5, 1}};
-    for(int i = 0; i < 4; i++){
-        this->mytilesPosition[i][0] = arr[i][0];
-        this->mytilesPosition[i][1] = arr[i][1];
-    }
+    initTiles(purple);
+    int start[4][2] = {{4, 0}, {3, 1}, {4, 1}, {5, 1}};
+    int rotate[4][4][2] = {{{1, 1}, {1, -1}, {0, 0}, {-1, 1}},
+                           {{-1, 1}, {1, 1}, {0, 0}, {-1, -1}},
+                           {{-1, -1}, {-1, 1}, {0, 0}, {1, -1}},
+                           {{1, -1}, {-1, -1}, {0, 0}, {1, 1}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 
 //Z
 Shape_Z::Shape_Z(MainWindow *window){
     this->window = window;
-    for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(red));
-    }
-    int arr[4][2] = {{3, 0}, {4, 0}, {4, 1}, {5, 1}};
-    for(int i = 0; i < 4; i++){
-        this->mytilesPosition[i][0] = arr[i][0];
-        this->mytilesPosition[i][1] = arr[i][1];
-    }
+    initTiles(red);
+    int start[4][2] = {{3, 0}, {4, 0}, {4, 1}, {5, 1}};
+    int rotate[4][4][2] = {{{2, 0}, {1, 1}, {0, 0}, {-1, 1}},
+                           {{0, 2}, {-1, 1}, {0, 0}, {-1, -1}},
+                           {{-2, 0}, {-1, -1}, {0, 0}, {1, -1}},
+                           {{0, -2}, {1, -1}, {0, 0}, {1, 1}}};
+    initArray(start, rotate);
+    moveToStart();
     updatePosition();
 }
 

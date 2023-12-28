@@ -12,7 +12,7 @@ class Shape{
         bool moveDown();
         //virtual bool moveRight() = 0;
         //virtual bool moveLeft() = 0;
-        //virtual bool rotate() = 0;
+        bool rotate();
 
     protected:
         const QColor blue = QColor(0,173,214);
@@ -23,11 +23,17 @@ class Shape{
         const QColor purple = QColor(164,26,192);
         const QColor red = QColor(237,21,0);
 
-        void updatePosition();
-
         QGraphicsRectItem *mytiles[4];
         int mytilesPosition[4][2]; //[][0]:x  [][1]:y;
+        int startPosition[4][2];
+        int dir;
+        int rotateTable[4][4][2];
         MainWindow *window;
+
+        void initTiles(QColor color);
+        void initArray(int start[4][2], int rotate[4][4][2]);
+        void moveToStart();
+        void updatePosition();
 };
 
 class Shape_I : public Shape{

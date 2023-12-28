@@ -40,6 +40,7 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::update(){
+    currentShape->rotate();
     if(!currentShape->moveDown()){
         currentShape = ShapeFactor::getShape(this);
     }
