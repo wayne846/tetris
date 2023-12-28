@@ -28,6 +28,11 @@ class MainWindow : public QMainWindow
         QGraphicsRectItem *tiles[10][20]; //[x][y]
         QGraphicsScene *scene_main;
 
+        void checkLine();
+
+    protected:
+        void keyPressEvent(QKeyEvent*);
+
     private slots:
         void update();
 

@@ -10,8 +10,9 @@ using namespace std;
 class Shape{
     public:
         bool moveDown();
-        //virtual bool moveRight() = 0;
-        //virtual bool moveLeft() = 0;
+        bool moveRight();
+        bool moveLeft();
+        void moveBottom();
         bool rotate();
 
     protected:
@@ -24,7 +25,9 @@ class Shape{
         const QColor red = QColor(237,21,0);
 
         QGraphicsRectItem *mytiles[4];
+        QGraphicsRectItem *previewTiles[4];
         int mytilesPosition[4][2]; //[][0]:x  [][1]:y;
+        int previewPosition[4][2];
         int startPosition[4][2];
         int dir;
         int rotateTable[4][4][2];

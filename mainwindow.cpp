@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QTimer>
+#include <QKeyEvent>
 #include "shape.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
@@ -35,13 +36,68 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     currentShape = ShapeFactor::getShape(this);
 }
 
-MainWindow::~MainWindow(){
-    delete ui;
+void MainWindow::checkLine(){
+    for(int i = 0; i < 20; i++){
+        int flag = true;
+        for(int j = 0; j < 10; j++){
+            if(tiles[j][i] == NULL){
+                flag = false;
+                break;
+            }
+        }
+        if(!flag) continue;
+        for(int j = 0; j < 10; j++){
+            delete(tiles[j][i]);
+            tiles[j][i] = NULL;
+        }
+        for(int j = i; j > 0; j--){
+            for(int k = 0; k < 10; k++){
+                if(tiles[k][j-1] != NULL){
+                    tiles[k][j-1]->setPos(tiles[k][j-1]->x(), tiles[k][j-1]->y()+tileWidth);
+                }
+                tiles[k][j] = tiles[k][j-1];
+                tiles[k][j-1] = NULL;
+            }
+        }
+        for(int j = 0; j < 10; j++){
+            tiles[j][0] = NULL;
+        }
+    }
 }
 
 void MainWindow::update(){
-    currentShape->rotate();
     if(!currentShape->moveDown()){
+        delete(currentShape);
         currentShape = ShapeFactor::getShape(this);
     }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    switch(event->key()){
+        case Qt::Key_Up:
+        case Qt::Key_W:
+            currentShape->rotate();
+            break;
+        case Qt::Key_Right:
+        case Qt::Key_D:
+            currentShape->moveRight();
+            break;
+        case Qt::Key_Left:
+        case Qt::Key_A:
+            currentShape->moveLeft();
+            break;
+        case Qt::Key_Down:
+        case Qt::Key_S:
+            currentShape->moveDown();
+            break;
+        case Qt::Key_Space:
+            currentShape->moveBottom();
+            delete(currentShape);
+            currentShape = ShapeFactor::getShape(this);
+            break;
+    }
+}
+
+MainWindow::~MainWindow(){
+    delete ui;
 }

@@ -8,10 +8,14 @@
 bool Shape::moveDown(){
     for(int i = 0; i < 4; i++){
         if(mytilesPosition[i][1]+1 >= 20 ||
-           window->tiles[ mytilesPosition[i][0] ][ mytilesPosition[i][1]+1 ] != NULL){
+            window->tiles[ mytilesPosition[i][0] ][ mytilesPosition[i][1]+1 ] != NULL){
             for(int i = 0; i < 4; i++){
                 window->tiles[ mytilesPosition[i][0] ][ mytilesPosition[i][1]] = mytiles[i];
             }
+            for(int i = 0; i < 4; i++){
+                delete(previewTiles[i]);
+            }
+            window->checkLine();
             return false;
         }
     }
@@ -21,6 +25,50 @@ bool Shape::moveDown(){
     }
     updatePosition();
     return true;
+}
+bool Shape::moveRight(){
+    for(int i = 0; i < 4; i++){
+        if(mytilesPosition[i][0]+1 >= 10 ||
+           window->tiles[ mytilesPosition[i][0]+1 ][ mytilesPosition[i][1] ] != NULL){
+            return false;
+        }
+    }
+
+    for(int i = 0; i < 4; i++){
+        mytilesPosition[i][0] += 1;
+    }
+    updatePosition();
+    return true;
+}
+bool Shape::moveLeft(){
+    for(int i = 0; i < 4; i++){
+        if(mytilesPosition[i][0]-1 < 0 ||
+           window->tiles[ mytilesPosition[i][0]-1 ][ mytilesPosition[i][1] ] != NULL){
+            return false;
+        }
+    }
+
+    for(int i = 0; i < 4; i++){
+        mytilesPosition[i][0] -= 1;
+    }
+    updatePosition();
+    return true;
+}
+void Shape::moveBottom(){
+    for(int i = 0; i < 4; i++){
+        mytilesPosition[i][0] = previewPosition[i][0];
+        mytilesPosition[i][1] = previewPosition[i][1];
+    }
+    for(int i = 0; i < 4; i++){
+        window->tiles[ mytilesPosition[i][0] ][ mytilesPosition[i][1]] = mytiles[i];
+    }
+    for(int i = 0; i < 4; i++){
+        delete(previewTiles[i]);
+    }
+    for(int i = 0; i < 4; i++){
+        mytiles[i]->setPos(window->tileWidth*mytilesPosition[i][0], window->tileWidth*mytilesPosition[i][1]);
+    }
+    window->checkLine();
 }
 bool Shape::rotate(){
     int next[4][2];
@@ -62,7 +110,10 @@ bool Shape::rotate(){
 }
 void Shape::initTiles(QColor color){
     for(int i = 0; i < 4; i++){
-        this->mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(color));
+        previewTiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(color, 2.4));
+    }
+    for(int i = 0; i < 4; i++){
+        mytiles[i] = window->scene_main->addRect(QRect(0, 0, window->tileWidth, window->tileWidth), QPen(Qt::black, 2.4), QBrush(color));
     }
 }
 void Shape::initArray(int start[4][2], int rotate[4][4][2]){
@@ -88,6 +139,29 @@ void Shape::updatePosition(){
     for(int i = 0; i < 4; i++){
         mytiles[i]->setPos(window->tileWidth*mytilesPosition[i][0], window->tileWidth*mytilesPosition[i][1]);
     }
+
+    //set previewTiles
+    for(int i = 0; i < 4; i++){
+        previewPosition[i][0] = mytilesPosition[i][0];
+        previewPosition[i][1] = mytilesPosition[i][1];
+    }
+    while(1){
+        int flag = true;
+        for(int i = 0; i < 4; i++){
+            if(previewPosition[i][1]+1 >= 20 ||
+               window->tiles[ previewPosition[i][0] ][ previewPosition[i][1]+1 ] != NULL){
+                flag = false;
+            }
+        }
+        if(!flag) break;
+        for(int i = 0; i < 4; i++){
+            previewPosition[i][1] += 1;
+        }
+    }
+    for(int i = 0; i < 4; i++){
+        previewTiles[i]->setPos(window->tileWidth*previewPosition[i][0], window->tileWidth*previewPosition[i][1]);
+    }
+
 }
 
 //I
