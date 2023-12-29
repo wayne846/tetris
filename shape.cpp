@@ -94,6 +94,12 @@ bool Shape::rotate(){
         next[2][1] -= 1;
         next[3][1] -= 1;
     }
+    while(next[0][1]<0 || next[1][1]<0 || next[2][1]<0 || next[3][1]<0){ //check up
+        next[0][1] += 1;
+        next[1][1] += 1;
+        next[2][1] += 1;
+        next[3][1] += 1;
+    }
     for(int i = 0; i < 4; i++){ //check already has tile
         if(window->tiles[ next[i][0] ][ next[i][1] ] != NULL){
             return false;
@@ -107,6 +113,15 @@ bool Shape::rotate(){
     dir = dir % 4;
     updatePosition();
     return true;
+}
+void Shape::deleteTiles(){
+    for(int i = 0; i < 4; i++){
+        delete(mytiles[i]);
+        delete(previewTiles[i]);
+    }
+}
+int Shape::getId(){
+    return id;
 }
 void Shape::initTiles(QColor color){
     for(int i = 0; i < 4; i++){
@@ -175,6 +190,7 @@ void Shape::checkDead(){
 //I
 Shape_I::Shape_I(MainWindow *window){
     this->window = window;
+    id = 0;
     initTiles(blue);
     int start[4][2] = {{3, 0}, {4, 0}, {5, 0}, {6, 0}};
     int rotate[4][4][2] = {{{2, -1}, {1, 0}, {0, 1}, {-1, 2}},
@@ -190,6 +206,7 @@ Shape_I::Shape_I(MainWindow *window){
 //J
 Shape_J::Shape_J(MainWindow *window){
     this->window = window;
+    id = 1;
     initTiles(darkBlue);
     int start[4][2] = {{3, 0}, {3, 1}, {4, 1}, {5, 1}};
     int rotate[4][4][2] = {{{2, 0}, {1, -1}, {0, 0}, {-1, 1}},
@@ -205,6 +222,7 @@ Shape_J::Shape_J(MainWindow *window){
 //L
 Shape_L::Shape_L(MainWindow *window){
     this->window = window;
+    id = 2;
     initTiles(orange);
     int start[4][2] = {{5, 0}, {3, 1}, {4, 1}, {5, 1}};
     int rotate[4][4][2] = {{{0, 2}, {1, -1}, {0, 0}, {-1, 1}},
@@ -220,6 +238,7 @@ Shape_L::Shape_L(MainWindow *window){
 //O
 Shape_O::Shape_O(MainWindow *window){
     this->window = window;
+    id = 3;
     initTiles(yellow);
     int start[4][2] = {{4, 0}, {5, 0}, {4, 1}, {5, 1}};
     int rotate[4][4][2] = {{{0, 0}, {0, 0}, {0, 0}, {0, 0}},
@@ -235,6 +254,7 @@ Shape_O::Shape_O(MainWindow *window){
 //S
 Shape_S::Shape_S(MainWindow *window){
     this->window = window;
+    id = 4;
     initTiles(green);
     int start[4][2] = {{4, 0}, {5, 0}, {3, 1}, {4, 1}};
     int rotate[4][4][2] = {{{1, 1}, {0, 2}, {1, -1}, {0, 0}},
@@ -250,6 +270,7 @@ Shape_S::Shape_S(MainWindow *window){
 //T
 Shape_T::Shape_T(MainWindow *window){
     this->window = window;
+    id = 5;
     initTiles(purple);
     int start[4][2] = {{4, 0}, {3, 1}, {4, 1}, {5, 1}};
     int rotate[4][4][2] = {{{1, 1}, {1, -1}, {0, 0}, {-1, 1}},
@@ -265,6 +286,7 @@ Shape_T::Shape_T(MainWindow *window){
 //Z
 Shape_Z::Shape_Z(MainWindow *window){
     this->window = window;
+    id = 6;
     initTiles(red);
     int start[4][2] = {{3, 0}, {4, 0}, {4, 1}, {5, 1}};
     int rotate[4][4][2] = {{{2, 0}, {1, 1}, {0, 0}, {-1, 1}},

@@ -45,6 +45,9 @@ class MainWindow : public QMainWindow
 
         Shape *currentShape;
         Preshape *previewShape;
+        Preshape *holdShape;
+        int holdShapeNumber;
+        bool canHold;
         QGraphicsTextItem *text_score;
         QTimer *timer;
 
@@ -52,5 +55,6 @@ class MainWindow : public QMainWindow
         int score;
 
         void addShapeSequence();
+        void hold();
 };
 #endif // MAINWINDOW_H

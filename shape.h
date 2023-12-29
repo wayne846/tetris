@@ -14,6 +14,8 @@ class Shape{
         bool moveLeft();
         void moveBottom();
         bool rotate();
+        void deleteTiles();
+        int getId();
 
     protected:
         const QColor blue = QColor(0,173,214);
@@ -31,6 +33,7 @@ class Shape{
         int startPosition[4][2];
         int dir;
         int rotateTable[4][4][2];
+        int id;
         MainWindow *window;
 
         void initTiles(QColor color);

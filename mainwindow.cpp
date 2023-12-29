@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     }
 
+    //do some shape thing
     addShapeSequence();
     addShapeSequence();
 
@@ -59,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     shapeSequence.pop();
 
     previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+    holdShape = NULL;
+    holdShapeNumber = -1;
+    canHold = true;
 }
 
 void MainWindow::checkLine(){
@@ -99,10 +103,13 @@ void MainWindow::checkLine(){
             break;
         case 2:
             score += 300;
+            break;
         case 3:
             score += 500;
+            break;
         case 4:
             score += 800;
+            break;
     }
     text_score->setPlainText("SCORE: " + QString::number(score));
     text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
@@ -119,6 +126,7 @@ void MainWindow::update(){
         previewShape->deleteTiles();
         delete(previewShape);
         previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+        canHold = true;
     }
 }
 
@@ -148,6 +156,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
                 previewShape->deleteTiles();
                 delete(previewShape);
                 previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+                canHold = true;
             }
             break;
         case Qt::Key_Space:
@@ -159,6 +168,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             previewShape->deleteTiles();
             delete(previewShape);
             previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+            canHold = true;
+            break;
+        case Qt::Key_C:
+            hold();
             break;
     }
 }
@@ -174,6 +187,35 @@ void MainWindow::addShapeSequence(){
     }
     for(int i = 0; i < 7; i++){
         shapeSequence.push(arr[i]);
+    }
+}
+
+void MainWindow::hold(){
+    if(!canHold) return;
+    if(holdShapeNumber == -1){
+        holdShapeNumber = currentShape->getId();
+        holdShape = PreshapeFactory::getShape(this, holdShapeNumber, 1);
+        //take next shape
+        currentShape->deleteTiles();
+        delete(currentShape);
+        currentShape = ShapeFactory::getShape(this, shapeSequence.front());
+        shapeSequence.pop();
+        if(shapeSequence.size() < 7) addShapeSequence();
+        previewShape->deleteTiles();
+        delete(previewShape);
+        previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+        canHold = false;
+    }else{
+        int temp = holdShapeNumber;
+        holdShape->deleteTiles();
+        delete(holdShape);
+        holdShapeNumber = currentShape->getId();
+        holdShape = PreshapeFactory::getShape(this, holdShapeNumber, 1);
+
+        currentShape->deleteTiles();
+        delete(currentShape);
+        currentShape = ShapeFactory::getShape(this, temp);
+        canHold = false;
     }
 }
 
