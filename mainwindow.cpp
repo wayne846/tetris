@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     shapeSequence.pop();
 
     previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+
     holdShape = NULL;
     holdShapeNumber = -1;
     canHold = true;
@@ -240,3 +241,51 @@ void MainWindow::hold(){
 MainWindow::~MainWindow(){
     delete ui;
 }
+
+void MainWindow::on_actionrestart_game_triggered()
+{
+    //delete all shape
+    for(int i = 0; i < 20; i++){
+        for(int j = 0; j < 10; j++){
+            if(tiles[j][i] != NULL) delete(tiles[j][i]);
+            tiles[j][i] = NULL;
+        }
+    }
+    if(previewShape != NULL){
+        previewShape->deleteTiles();
+        delete(previewShape);
+        previewShape = NULL;
+    }
+    if(holdShape != NULL){
+        holdShape->deleteTiles();
+        delete(holdShape);
+        holdShape = NULL;
+    }
+    holdShapeNumber = -1;
+    canHold = true;
+    if(currentShape != NULL){
+        currentShape->deleteTiles();
+        delete(currentShape);
+        currentShape = NULL;
+    }
+
+    timer->setInterval(1000);
+
+    //init other value
+    isDead = false;
+    score = 0;
+    totalLine = 0;
+
+    //update text
+    text_score->setPlainText("SCORE: " + QString::number(score));
+    text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
+
+    while(!shapeSequence.empty()) shapeSequence.pop();
+    addShapeSequence();
+    addShapeSequence();
+    currentShape = ShapeFactory::getShape(this, shapeSequence.front());
+    shapeSequence.pop();
+    previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+
+}
+

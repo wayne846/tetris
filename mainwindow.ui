@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>俄羅斯方塊</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGraphicsView" name="graphicsView">
@@ -55,7 +55,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
+  <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -64,7 +64,24 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>選單</string>
+    </property>
+    <addaction name="actionrestart_game"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
+  <action name="actionrestart_game">
+   <property name="text">
+    <string>重新開始</string>
+   </property>
+   <property name="toolTip">
+    <string>重新開始</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
