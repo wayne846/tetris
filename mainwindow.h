@@ -53,6 +53,7 @@ class MainWindow : public QMainWindow
 
         queue<int> shapeSequence;
         int score;
+        int totalLine;
 
         void addShapeSequence();
         void hold();

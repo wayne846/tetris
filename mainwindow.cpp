@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //init other value
     isDead = false;
     score = 0;
+    totalLine = 0;
 
     //init scene_main
     scene_main = new QGraphicsScene(this);
@@ -41,7 +42,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QGraphicsTextItem *text_hold = scene_main->addText("HOLD", QFont("Arial", 20));
     text_hold->setPos(-tileWidth*6.7, -tileWidth*1.3);
     text_score = scene_main->addText("SCORE: " + QString::number(score), QFont("Arial", 27));
-    qDebug() << text_score->boundingRect().width();
     text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
     ui->graphicsView->setScene(scene_main);
 
@@ -113,6 +113,24 @@ void MainWindow::checkLine(){
     }
     text_score->setPlainText("SCORE: " + QString::number(score));
     text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
+
+    //change timer
+    totalLine += n;
+    if(totalLine >= 10 && timer->interval() >= 1000){
+        timer->setInterval(800);
+    }else if(totalLine >= 20 && timer->interval() >= 800){
+        timer->setInterval(700);
+    }else if(totalLine >= 30 && timer->interval() >= 700){
+        timer->setInterval(600);
+    }else if(totalLine >= 40 && timer->interval() >= 600){
+        timer->setInterval(500);
+    }else if(totalLine >= 50 && timer->interval() >= 500){
+        timer->setInterval(400);
+    }else if(totalLine >= 60 && timer->interval() >= 400){
+        timer->setInterval(300);
+    }else if(totalLine >= 70 && timer->interval() >= 300){
+        timer->setInterval(200);
+    }
 }
 
 void MainWindow::update(){
