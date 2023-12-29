@@ -45,9 +45,11 @@ class MainWindow : public QMainWindow
 
         Shape *currentShape;
         Preshape *previewShape;
+        QGraphicsTextItem *text_score;
         QTimer *timer;
 
         queue<int> shapeSequence;
+        int score;
 
         void addShapeSequence();
 };

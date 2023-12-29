@@ -8,6 +8,7 @@
 #include <time.h>
 #include "shape.h"
 #include "preshape.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
@@ -17,12 +18,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(1000);
 
+    //init other value
+    isDead = false;
+    score = 0;
+
     //init scene_main
     scene_main = new QGraphicsScene(this);
     scene_main->setSceneRect(0, 0, sceneWidth, sceneHeight);
-    scene_main->addRect(QRect(-500, -100, 1200, 1000),QPen() , QBrush(QColor(240,240,240)));
+    scene_main->addRect(QRect(-500, -100, 1200, 1000),QPen() , QBrush(QColor(240,240,240))); //background
     scene_main->addRect(QRect(0, 0, sceneWidth, sceneHeight), QPen(Qt::black, 1), QBrush(Qt::white)); //main background
-    for(int i = 0; i < sceneWidth; i += tileWidth){
+    for(int i = 0; i < sceneWidth; i += tileWidth){  //grid
         scene_main->addLine(QLine(i, 0, i, sceneHeight), QPen(Qt::gray, 0.5));
     }
     for(int i = 0; i < sceneHeight; i += tileWidth){
@@ -31,10 +36,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     scene_main->addRect(QRect(0, 0, sceneWidth, sceneHeight), QPen(Qt::black, 3.2)); //main
     scene_main->addRect(QRect(sceneWidth+tileWidth*3, 0, tileWidth*4.5, tileWidth*4.5), QPen(Qt::black, 3.2), QBrush(Qt::white)); //preview
     scene_main->addRect(QRect(-tileWidth*7.5, 0, tileWidth*4.5, tileWidth*4.5), QPen(Qt::black, 3.2), QBrush(Qt::white)); //hold
-    QGraphicsTextItem *text_next = scene_main->addText(QString("NEXT"), QFont("Arial", 25));
-    text_next->setPos(sceneWidth+tileWidth*3.7, -tileWidth*1.5);
-    QGraphicsTextItem *text_hold = scene_main->addText(QString("HOLD"), QFont("Arial", 25));
-    text_hold->setPos(-tileWidth*6.9, -tileWidth*1.5);
+    QGraphicsTextItem *text_next = scene_main->addText("NEXT", QFont("Arial", 20));
+    text_next->setPos(sceneWidth+tileWidth*3.9, -tileWidth*1.3);
+    QGraphicsTextItem *text_hold = scene_main->addText("HOLD", QFont("Arial", 20));
+    text_hold->setPos(-tileWidth*6.7, -tileWidth*1.3);
+    text_score = scene_main->addText("SCORE: " + QString::number(score), QFont("Arial", 27));
+    qDebug() << text_score->boundingRect().width();
+    text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
     ui->graphicsView->setScene(scene_main);
 
     //init tiles
@@ -43,8 +51,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             tiles[i][j] = NULL;
         }
     }
-
-    isDead = false;
 
     addShapeSequence();
     addShapeSequence();
@@ -56,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 }
 
 void MainWindow::checkLine(){
+    int n = 0;
     for(int i = 0; i < 20; i++){
         int flag = true;
         for(int j = 0; j < 10; j++){
@@ -65,11 +72,13 @@ void MainWindow::checkLine(){
             }
         }
         if(!flag) continue;
+        //has line
+        n++;
         for(int j = 0; j < 10; j++){
             delete(tiles[j][i]);
             tiles[j][i] = NULL;
         }
-        for(int j = i; j > 0; j--){
+        for(int j = i; j > 0; j--){ //move line
             for(int k = 0; k < 10; k++){
                 if(tiles[k][j-1] != NULL){
                     tiles[k][j-1]->setPos(tiles[k][j-1]->x(), tiles[k][j-1]->y()+tileWidth);
@@ -82,6 +91,21 @@ void MainWindow::checkLine(){
             tiles[j][0] = NULL;
         }
     }
+
+    //add score
+    switch(n){
+        case 1:
+            score += 100;
+            break;
+        case 2:
+            score += 300;
+        case 3:
+            score += 500;
+        case 4:
+            score += 800;
+    }
+    text_score->setPlainText("SCORE: " + QString::number(score));
+    text_score->setPos(sceneWidth/2.0 - text_score->boundingRect().width()/2, -tileWidth*2.3);
 }
 
 void MainWindow::update(){
@@ -116,7 +140,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             break;
         case Qt::Key_Down:
         case Qt::Key_S:
-            currentShape->moveDown();
+            if(!currentShape->moveDown()){
+                delete(currentShape);
+                currentShape = ShapeFactory::getShape(this, shapeSequence.front());
+                shapeSequence.pop();
+                if(shapeSequence.size() < 7) addShapeSequence();
+                previewShape->deleteTiles();
+                delete(previewShape);
+                previewShape = PreshapeFactory::getShape(this, shapeSequence.front(), 0);
+            }
             break;
         case Qt::Key_Space:
             currentShape->moveBottom();
